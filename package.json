@@ -1,0 +1,38 @@
+{
+  "name": "homework4",
+  "version": "1.0.0",
+  "description": "Web API 3916 Homework 4",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha --timeout 10000 --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebKmn/CSC3916_HW4.git"
+  },
+  "keywords": [
+    "Movie"
+  ],
+  "author": "Web Kimoni",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WebKmn/CSC3916_HW4/issues"
+  },
+  "homepage": "https://github.com/WebKmn/CSC3916_HW4#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.19.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.9",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "mocha": "^9.2.2"
+  }
+}
