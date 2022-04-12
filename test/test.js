@@ -43,29 +43,30 @@ let movie_details = {
 
 let update_movie = {
     title: 'testMovie',
-    releaseDate: '2005-01-04',
-    genre: 'Horror',
+    releaseDate: '2002-09-31',
+    genre: 'Romance',
     actors: [
         {
-            actorName: 'Actor3',
-            characterName: 'Bruce'
+            actorName: 'Actor',
+            characterName: 'Ip Man'
         },
         {
-            actorName: 'Actor4',
-            characterName: 'IP Man'
+            actorName: 'Actor1',
+            characterName: 'Bruce Lee'
         },
         {
-            actorName: 'Actor5',
-            characterName: 'No Man'
+            actorName: 'Actor2',
+            characterName: 'Chris Rock'
         }
     ]
 };
 
-/*
-* To properly run the test, comment out all blocks except for sign up, sign in
-* and the CRUD block running - uncomment done()
-* All test pass when run in this format
-*/
+let review_details = {
+    user: '',
+    movie: 'testMovie',
+    rating: 2,
+    review: 'Test Movie Review1'
+}
 
 describe('Server CRUD Testing', () =>{
     after((done) =>{
@@ -110,6 +111,7 @@ describe('Server CRUD Testing', () =>{
             // Read all movies
             chai.request(server)
                 .get('/movies')
+                .query({reviews: true})
                 .set('Authorization', this.token)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -120,7 +122,7 @@ describe('Server CRUD Testing', () =>{
         });
     });
 
-    describe('Post a Movie', ()=> {
+    describe('Post Movie', ()=> {
         it('Should post a new Movie to DB.', (done) => {
             chai.request(server)
                 .post('/movies')
@@ -157,6 +159,34 @@ describe('Server CRUD Testing', () =>{
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.success.should.eql(true);
+                    done();
+                });
+        });
+    });
+
+    describe('Post Review', ()=> {
+        it('Should post a new Review for a movie in DB.', (done) => {
+            chai.request(server)
+                .post('/reviews')
+                .set('Authorization', this.token)
+                .send(review_details)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    done();
+                });
+        });
+    });
+
+    describe('Get Reviews', () => {
+        it('Should get all Reviews from DB.', (done) => {
+            // Read all movies
+            chai.request(server)
+                .get('/reviews')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    res.body.should.have.property('reviews');
                     done();
                 });
         });

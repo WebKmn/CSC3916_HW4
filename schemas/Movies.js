@@ -25,6 +25,11 @@ let MovieSchema = new Schema({
         type: [Actors],
         required: true,
         validate: [val, 'Please add three or more actors to list.']
+    },
+    hasReviews: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 

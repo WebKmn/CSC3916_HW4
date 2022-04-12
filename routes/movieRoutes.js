@@ -22,12 +22,37 @@ let getActors = (req) => {
 
 router.route('/')
     .get(jwtAuthController.isAuthenticated, (req, res) => {
-        Movie.find({}, (err, movies) => {
-            if (err){
-                return res.status(400).json({success: false, error:err});
-            }
-            return res.status(200).send({success:true, movies:movies});
-        });
+        let reqQuery = req.query;
+        if(reqQuery.reviews === "true"){
+            Movie.aggregate([
+                {
+                    $match: {hasReviews: true}
+                },
+                {
+                    $lookup:{
+                        from: "reviews",
+                        localField: "_id",
+                        foreignField: 'movie',
+                        as: "reviews"
+                    }
+                },
+                {
+                    $set: {avgRating: {$avg: "$reviews.rating"}}
+                }
+            ], null, (err, movies) => {
+                if(err){
+                    return res.status(400).send({success: false, error:err});
+                }
+                return res.status(200).send({success: true, movies:movies});
+            });
+        } else {
+            Movie.find({}, (err, movies) => {
+                if (err){
+                    return res.status(400).json({success: false, error:err});
+                }
+                return res.status(200).send({success:true, movies:movies});
+            });
+        }
     })
     .post(jwtAuthController.isAuthenticated, (req, res) => {
         let movie = new Movie();
