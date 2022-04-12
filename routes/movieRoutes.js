@@ -22,8 +22,7 @@ let getActors = (req) => {
 
 router.route('/')
     .get(jwtAuthController.isAuthenticated, (req, res) => {
-        let reqQuery = req.query;
-        if(reqQuery.reviews === "true"){
+        if(req.query.reviews === "true"){
             Movie.aggregate([
                 {
                     $match: {hasReviews: true}
@@ -40,8 +39,8 @@ router.route('/')
                     $set: {avgRating: {$avg: "$reviews.rating"}}
                 }
             ], null, (err, movies) => {
-                if(err){
-                    return res.status(400).send({success: false, error:err});
+                if(err || movies.length < 1){
+                    return res.status(400).send({success: false, msg: 'Request failed to find all Movies with Reviews'});
                 }
                 return res.status(200).send({success: true, movies:movies});
             });
@@ -59,7 +58,7 @@ router.route('/')
         let actorList = getActors(req);
 
         movie.title = req.body.title;
-        movie.releaseDate = new Date(req.body.releaseDate);
+        movie.releaseDate = new Date(req.body.releaseDate).toLocaleDateString('en-US');
         movie.genre = req.body.genre;
         movie.actors = actorList;
 
@@ -77,7 +76,7 @@ router.route('/')
             }else{
                 let actorList = getActors(req);
                 // movie.title = req.body.title;
-                movie.releaseDate = (!req.body.releaseDate ? '': new Date(req.body.releaseDate));
+                movie.releaseDate = (!req.body.releaseDate ? '': new Date(req.body.releaseDate).toLocaleDateString('en-US'));
                 movie.genre = req.body.genre;
                 movie.actors = actorList;
 
@@ -99,5 +98,42 @@ router.route('/')
             return res.status(200).json({success: true, msg:'Movie deleted successfully.', deleted: movie});
         });
     });
+
+router.route('/:title')
+    .get(jwtAuthController.isAuthenticated, (req, res) => {
+        if(req.query.reviews === "true"){
+            Movie.aggregate([
+                {
+                    $match: {
+                        title: req.params.title,
+                        hasReviews: true
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "reviews",
+                        localField: "_id",
+                        foreignField: 'movie',
+                        as: "reviews"
+                    }
+                },
+                {
+                    $set: {avgRating: {$avg: "$reviews.rating"}}
+                }
+            ], null, (err, movie) => {
+                if(err || movie.length < 1){
+                    return res.status(400).send({success: false, msg: 'Movie Not Found or has no Reviews', error:err});
+                }
+                return res.status(200).send({success: true, movie:movie});
+            });
+        } else {
+            Movie.findOne({title: req.params.title}, null, null,(err, movie) => {
+                if (!movie || err){
+                    return res.status(400).json({success: false, msg: 'Movie not Found', error:err});
+                }
+                return res.status(200).send({success:true, movie:movie});
+            });
+        }
+    })
 
 module.exports = router;

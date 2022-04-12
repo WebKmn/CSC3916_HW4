@@ -22,7 +22,7 @@ let login_details = {
 };
 
 let movie_details = {
-    title: 'testMovie',
+    title: 'Test Movie',
     releaseDate: '2011-05-10',
     genre: 'Drama',
     actors: [
@@ -42,7 +42,7 @@ let movie_details = {
 };
 
 let update_movie = {
-    title: 'testMovie',
+    title: 'Test Movie',
     releaseDate: '2002-09-31',
     genre: 'Romance',
     actors: [
@@ -63,9 +63,9 @@ let update_movie = {
 
 let review_details = {
     user: '',
-    movie: 'testMovie',
-    rating: 2,
-    review: 'Test Movie Review1'
+    movie: 'Test Movie',
+    rating: 4,
+    review: 'Not bad.'
 }
 
 describe('Server CRUD Testing', () =>{
@@ -106,7 +106,65 @@ describe('Server CRUD Testing', () =>{
 
     });
 
-    describe('Get Movies', () => {
+    describe('Post A Movie', ()=> {
+        it('Should post a new Movie to DB.', (done) => {
+            chai.request(server)
+                .post('/movies')
+                .set('Authorization', this.token)
+                .send(movie_details)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    done();
+                });
+        });
+    });
+
+    describe('Update A Movie', () => {
+        it('Should find and update a saved Movie in DB.', (done) => {
+            chai.request(server)
+                .put('/movies')
+                .set('Authorization', this.token)
+                .send(update_movie)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    done();
+                });
+        });
+    });
+
+    describe('Post A Review', ()=> {
+        it('Should post a new Review for a movie in DB.', (done) => {
+            chai.request(server)
+                .post('/reviews')
+                .set('Authorization', this.token)
+                .send(review_details)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    done();
+                });
+        });
+    });
+
+    describe('Get A Movie', () => {
+        it('Should get a Movie from DB.', (done) => {
+            // Read all movies
+            chai.request(server)
+                .get('/movies/Test Movie')
+                .query({reviews: true})
+                .set('Authorization', this.token)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
+                    res.body.should.have.property('movie');
+                    done();
+                });
+        });
+    });
+
+    describe('Get All Movies', () => {
         it('Should get all Movies from DB.', (done) => {
             // Read all movies
             chai.request(server)
@@ -122,63 +180,7 @@ describe('Server CRUD Testing', () =>{
         });
     });
 
-    describe('Post Movie', ()=> {
-        it('Should post a new Movie to DB.', (done) => {
-            chai.request(server)
-                .post('/movies')
-                .set('Authorization', this.token)
-                .send(movie_details)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.success.should.eql(true);
-                    done();
-                });
-        });
-    });
-
-    describe('Update Movie', () => {
-        it('Should find and update a saved Movie in DB.', (done) => {
-            chai.request(server)
-                .put('/movies')
-                .set('Authorization', this.token)
-                .send(update_movie)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.success.should.eql(true);
-                    done();
-                });
-        });
-    });
-
-    describe('Delete Movie', () => {
-        it('Should find and delete a saved Movie in DB', (done) => {
-            chai.request(server)
-                .delete('/movies')
-                .set('Authorization', this.token)
-                .send({title: 'testMovie'})
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.success.should.eql(true);
-                    done();
-                });
-        });
-    });
-
-    describe('Post Review', ()=> {
-        it('Should post a new Review for a movie in DB.', (done) => {
-            chai.request(server)
-                .post('/reviews')
-                .set('Authorization', this.token)
-                .send(review_details)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.success.should.eql(true);
-                    done();
-                });
-        });
-    });
-
-    describe('Get Reviews', () => {
+    describe('Get All Reviews', () => {
         it('Should get all Reviews from DB.', (done) => {
             // Read all movies
             chai.request(server)
@@ -187,6 +189,20 @@ describe('Server CRUD Testing', () =>{
                     res.should.have.status(200);
                     res.body.success.should.eql(true);
                     res.body.should.have.property('reviews');
+                    done();
+                });
+        });
+    });
+
+    describe('Delete A Movie', () => {
+        it('Should find and delete a saved Movie in DB', (done) => {
+            chai.request(server)
+                .delete('/movies')
+                .set('Authorization', this.token)
+                .send({title: 'Test Movie'})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.success.should.eql(true);
                     done();
                 });
         });
