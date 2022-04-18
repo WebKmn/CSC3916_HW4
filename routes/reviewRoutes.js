@@ -8,7 +8,7 @@ const router = require('express').Router(),
     jwtAuthController = require("../auth/auth_jwt");
 
 router.route('/')
-    .get((req, res) => {
+    .get(jwtAuthController.isAuthenticated, (req, res) => {
         Review.find({}, (err, reviews) => {
             if(err){
                 return res.status(400).send({success: false, error:err});

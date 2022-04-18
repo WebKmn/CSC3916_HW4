@@ -9,7 +9,7 @@ let getActors = (req) => {
     let actorsList = [];
     let actors = req.body.actors;
 
-    if(!actors){return actorsList;}
+    if(!actors || actors.length === 0){return actorsList;}
 
     actors.forEach(obj => {
         let actor = new Actor();
@@ -59,6 +59,7 @@ router.route('/')
 
         movie.title = req.body.title;
         movie.releaseDate = new Date(req.body.releaseDate).toLocaleDateString('en-US');
+        movie.imgUrl = req.body.imgUrl;
         movie.genre = req.body.genre;
         movie.actors = actorList;
 
@@ -76,16 +77,17 @@ router.route('/')
             }else{
                 let actorList = getActors(req);
                 // movie.title = req.body.title;
-                movie.releaseDate = (!req.body.releaseDate ? '': new Date(req.body.releaseDate).toLocaleDateString('en-US'));
-                movie.genre = req.body.genre;
-                movie.actors = actorList;
+                movie.releaseDate = (!req.body.releaseDate ? movie.releaseDate : new Date(req.body.releaseDate).toLocaleDateString('en-US'));
+                movie.imgUrl = (!req.body.imgUrl ? movie.imgUrl : req.body.imgUrl);
+                movie.genre = (!req.body.genre ? movie.genre : req.body.genre);
+                movie.actors = (actorList.length === 0 ? movie.actors : actorList);
 
                 if(movie.validateProperties()){
                     movie.save(() => {
                         return res.status(200).send({success: true, msg: 'Successfully updated the Movie.'});
                     });
                 } else {
-                    return res.status(400).send({success: false, msg: 'Failed to Update Movie'});
+                    return res.status(400).send({success: false, msg: 'Failed to Update Movie, missing one or more items.'});
                 }
             }
         });

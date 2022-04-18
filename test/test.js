@@ -25,6 +25,7 @@ let movie_details = {
     title: 'Test Movie',
     releaseDate: '2011-05-10',
     genre: 'Drama',
+    imgUrl: 'Test movie image url',
     actors: [
         {
             actorName: 'Actor1',
@@ -45,6 +46,7 @@ let update_movie = {
     title: 'Test Movie',
     releaseDate: '2002-09-31',
     genre: 'Romance',
+    imgUrl: 'Test movie image url 2',
     actors: [
         {
             actorName: 'Actor',
@@ -185,6 +187,7 @@ describe('Server CRUD Testing', () =>{
             // Read all movies
             chai.request(server)
                 .get('/reviews')
+                .set('Authorization', this.token)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.success.should.eql(true);
