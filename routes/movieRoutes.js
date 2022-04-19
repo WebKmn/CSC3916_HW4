@@ -37,6 +37,9 @@ router.route('/')
                 },
                 {
                     $set: {avgRating: {$avg: "$reviews.rating"}}
+                },
+                {
+                    $sort: {avgRating: -1 }
                 }
             ], null, (err, movies) => {
                 if(err || movies.length < 1){
