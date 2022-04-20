@@ -30,7 +30,7 @@ router.route('/')
             if(!user){
                 return res.status(400).send({success: false, msg: 'User not found. Saving Review failed.'});
             }
-            review.user = user._id;
+            review.user = user.username;
         });
 
         Movie.findOne({title: req.body.movie}).exec((err, movie) => {
