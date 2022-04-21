@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
 
 let ReviewSchema = new Schema({
     user: {
-        type: Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     movie:{
